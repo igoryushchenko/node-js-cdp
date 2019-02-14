@@ -1,0 +1,30 @@
+{
+  "name": "homework-01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "npx babel src --out-dir dist",
+    "start": "npm run clean && npm run build && cd dist && nodemon app.js ",
+    "clean": "rm -rf dist && mkdir dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igoryushchenko/node-js-cdp.git"
+  },
+  "author": "Igor Iushchenko <Igor_Iushchenko@epam.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/igoryushchenko/node-js-cdp/issues"
+  },
+  "homepage": "https://github.com/igoryushchenko/node-js-cdp#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "nodemon": "^1.18.10"
+  }
+}
