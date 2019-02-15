@@ -81,7 +81,6 @@ node-js-cdp.iml
 ### Node template
 # Logs
 logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -118,8 +117,6 @@ node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
-typings/
-
 # Optional npm cache directory
 .npm
 
@@ -141,3 +138,4 @@ typings/
 # next.js build output
 .next
 
+dist/
