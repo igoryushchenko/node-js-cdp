@@ -5,7 +5,22 @@ import csvjson from 'csvjson'
 class Importer {
   import (path) {
     return new Promise((resolve) => {
-      resolve(this.importSync(path))
+      resolve(
+          fs.readdir(path, function (err, files) {
+              if (err) {
+                  console.log(err)
+                  return
+              }
+
+              let result = []
+
+              files.filter((each) => each.endsWith('.csv')).forEach((csvFile) => {
+                  let data = fs.readFileSync(syspath.join(path, csvFile), { encoding: 'utf8' })
+                  result.push(csvjson.toObject(data))
+              })
+              return result
+          })
+      )
     })
   }
 
