@@ -4,7 +4,7 @@ const fs = require('fs')
 const syspath = require('path')
 const csvjson = require('csvjson')
 
-function reverse (str) {
+function reverse() {
   process.stdin.setEncoding('utf8')
 
   process.stdin.on('readable', () => {
@@ -19,7 +19,7 @@ function reverse (str) {
   })
 }
 
-function transform (str) {
+function transform() {
   const transformStream = trough(write, end);
   process.stdin.pipe(transformStream).pipe(process.stdout);
 }
@@ -42,7 +42,7 @@ function outputFile (filePath) {
   }
 }
 
-function convertFromFile (filePath) {
+function convertFromFile(filePath) {
   if (fs.existsSync(filePath) && filePath.endsWith('.csv')){
     const read = fs.createReadStream(filePath)
     const toObject = csvjson.stream.toObject()
@@ -53,7 +53,7 @@ function convertFromFile (filePath) {
   }
 }
 
-function convertToFile (filePath) {
+function convertToFile(filePath) {
   if (fs.existsSync(filePath) && filePath.endsWith('.csv')){
     const read = fs.createReadStream(filePath)
     const write = fs.createWriteStream(filePath.replace('.csv', '.json'))
@@ -65,7 +65,7 @@ function convertToFile (filePath) {
   }
 }
 
-function cssBundler (path) {
+function cssBundler(path) {
   if (fs.existsSync(path)) {
     fs.readdir(path, function (err, files) {
       if (err) {
