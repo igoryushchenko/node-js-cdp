@@ -103,9 +103,9 @@ if (!process.argv.slice(2).length) {
 }
 
 if (commander.action === 'reverse') {
-  reverse('1')
+  reverse()
 } else if (commander.action === 'transform') {
-  transform('2')
+  transform()
 } else if (commander.action === 'outputFile' && commander.file) {
   outputFile(commander.file)
 } else if (commander.action === 'convertFromFile' && commander.file) {
@@ -117,11 +117,3 @@ if (commander.action === 'reverse') {
 } else {
   printError()
 }
-
-// === Terminal ===
-// ./streams.js --action=outputFile --file=users.csv
-// ./streams.js --action=transformToFile --file=users.csv
-// ./streams.js --action=transform textToTransform
-// ./streams.js -a outputFile -f users.csv
-// ./streams.js --help
-// ./streams.js -h
