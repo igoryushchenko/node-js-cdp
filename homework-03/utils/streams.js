@@ -5,13 +5,11 @@ const syspath = require('path')
 const csvjson = require('csvjson')
 
 function reverse() {
+
   process.stdin.setEncoding('utf8')
 
-  process.stdin.on('readable', () => {
-    const chunk = process.stdin.read()
-    if (chunk !== null) {
-      process.stdout.write(`data: ${chunk}`)
-    }
+  process.stdin.on('data', function (data) {
+    process.stdout.write(data.split("").reverse().join(""))
   })
 
   process.stdin.on('end', () => {
@@ -79,11 +77,13 @@ function cssBundler(path) {
         write.write(data)
       }
 
-      let finalData = fs.readFileSync('nodejs-homework3.css', { encoding: 'utf8' })
+      let finalData = fs.readFileSync(syspath.join(path,'nodejs-homework3.css'), { encoding: 'utf8' })
       write.write(finalData)
 
       write.end()
     })
+  } else {
+    printError()
   }
 }
 

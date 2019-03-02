@@ -4,7 +4,6 @@
   "description": "",
   "main": "",
   "scripts": {
-    "start": "nodemon --exec babel-node app.js",
     "lint": "eslint -o eslint-report.txt .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
