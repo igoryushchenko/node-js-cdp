@@ -10,6 +10,10 @@ class User {
     get email () {
         return this._email
     }
+
+    toJSON () {
+        return { name: this.name, email: this.email }
+    }
 }
 
 export default User

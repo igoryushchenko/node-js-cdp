@@ -33,8 +33,7 @@
     "nodemon": "^1.18.10"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
-    "through2": "^3.0.1"
+    "uuid": "^3.3.2"
   }
 }

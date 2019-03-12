@@ -1,22 +1,18 @@
 const fs = require('fs')
-const trough = require('through2')
-
-function write (buffer, encoding, next) {
-  this.push(buffer.toString().replace('{message}', 'Welcome to the http!'))
-  next()
-}
-
-function end (done) {
-  done()
-}
 
 require('http')
 .createServer()
 .on('request', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/html'
+  let body = ''
+  const fileReadStream = fs.createReadStream('index.html')
+  fileReadStream.on('data', chunk => {
+    body += chunk
+  }).on('close', () => {
+    body = body.replace('{message}', 'Welcome to the http!')
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    })
+    res.end(body)
   })
-  const transformStream = trough(write, end)
-  fs.createReadStream('index.html').pipe(transformStream).pipe(res)
 })
 .listen(3000)

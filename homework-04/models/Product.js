@@ -17,6 +17,10 @@ class Product {
     get reviews () {
         return this._reviews
     }
+
+    toJSON () {
+        return { id: this.id, name: this.name, reviews: this.reviews }
+    }
 }
 
 export default Product

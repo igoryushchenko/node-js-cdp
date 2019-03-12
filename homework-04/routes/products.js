@@ -1,4 +1,5 @@
 import express from 'express'
+import uuidv1 from 'uuid/v1'
 import Product from '../models/Product'
 
 const productDb = []
@@ -44,15 +45,14 @@ router.get('/:id', (req, res) => {
 
 // body request example:
 //  {
-//   "id": "4444",
 //   "name": "Gucci Glasses"
 //  }
 
 router.post('/', (req, res) => {
   if (req.body !== undefined) {
-    const newProduct = new Product(req.body.id, req.body.name)
+    const newProduct = new Product(uuidv1(), req.body.name)
     productDb.push(newProduct)
-    res.status(202).json(newProduct)
+    res.status(201).json(newProduct)
   } else {
     res.status(404).json({
       success: false,
