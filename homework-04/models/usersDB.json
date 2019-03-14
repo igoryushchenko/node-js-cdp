@@ -1,0 +1,14 @@
+[{
+  "_name": "Bob",
+  "_email": "bob@mail.com",
+  "_password": "123456"
+},{
+  "_name": "Jay",
+  "_email": "jay@mail.com",
+  "_password": "654321"
+},{
+  "_name": "Alex",
+  "_email": "alex@mail.com",
+  "_password": "qwerty"
+}
+]
