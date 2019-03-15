@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
+    "start": "nodemon ./index.js --exec babel-node -e js",
     "lint": "eslint -o eslint-report.txt .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

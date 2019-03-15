@@ -18,6 +18,12 @@ class User {
     set password (password) {
         this._password = password
     }
+    get id () {
+        return this._id
+    }
+    set id (password) {
+        this._id = password
+    }
 
     toJSON () {
         return { name: this.name, email: this.email }
