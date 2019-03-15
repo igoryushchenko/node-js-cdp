@@ -4,24 +4,26 @@ import passport from 'passport'
 import LocalStrategy from 'passport-local'
 import FacebookStrategy from 'passport-facebook'
 import TwitterStrategy from 'passport-twitter'
-import config from '../config/config.json'
 import User from '../models/User'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const router = express.Router()
 
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 const usersDb = User.getUsersDB()
-const secret = config.tokenSecret
+const secret = process.env.tokenSecret
 
 router.post('/local', (req, res) => {
-  if (req.parsedQuery && req.parsedQuery.email) {
-    const user = usersDb.find(user => user.email === req.parsedQuery.email)
-    if (user && user.password === req.parsedQuery.password) {
+  if (req.body && req.body.email) {
+    const user = usersDb.find(user => user.email === req.body.email)
+    if (user && user.password === req.body.password) {
       let data = {
           user: user
       }
-      let token = jwt.sign(data, secret, { expiresIn: 20 })
+      let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
       let payload = {
         code: 200,
         message: 'OK',
@@ -57,9 +59,9 @@ passport.use(new LocalStrategy({
 }))
 
 passport.use(new FacebookStrategy({
-  clientID: config.facebookAppId,
-  clientSecret: config.facebookAppSecret,
-  callbackURL: 'http://localhost:9000/api/auth/facebook/callback',
+  clientID: process.env.facebookAppId,
+  clientSecret: process.env.facebookAppSecret,
+  callbackURL: process.env.facebookCallbackUrl,
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
@@ -73,9 +75,9 @@ passport.use(new FacebookStrategy({
 }))
 
 passport.use(new TwitterStrategy({
-  consumerKey: config.twitterConsumerKey,
-  consumerSecret: config.twitterConsumerSecret,
-  callbackURL: 'http://localhost:9000/api/auth/twitter/callback',
+  consumerKey: process.env.twitterConsumerKey,
+  consumerSecret: process.env.twitterConsumerSecret,
+  callbackURL: process.env.twitterCallbackUrl,
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
@@ -89,17 +91,19 @@ passport.use(new TwitterStrategy({
 }))
 
 passport.use(new GoogleStrategy({
-  clientID: config.googleConsumerKey,
-  clientSecret: config.googleConsumerSecret,
-  callbackURL: 'http://localhost:9000/api/auth/google/callback',
+  clientID: process.env.googleConsumerKey,
+  clientSecret: process.env.googleConsumerSecret,
+  callbackURL: process.env.googleCallbackUrl,
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
-    const user = usersDb.find(user => user.id === profile.id)
+    let user = usersDb.find(user => user.id === profile.id)
     if (user) {
       done(null, user)
     } else {
-      console.log('User not found in DB')
+      user = new User(profile.displayName, profile.emails[0].value)
+      usersDb.push(user)
+      done(null, user)
     }
   }
 }))
@@ -108,7 +112,7 @@ router.post('/passport-local', passport.authenticate('local', { session: false }
   let data = {
     user: req.user
   }
-  let token = jwt.sign(data, secret, { expiresIn: 20 })
+  let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
   let payload = {
     code: 200,
     message: 'OK',
@@ -125,7 +129,7 @@ router.get('/facebook/callback',
     let data = {
       user: req.user
     }
-    let token = jwt.sign(data, secret, { expiresIn: 20 })
+    let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
     let payload = {
       code: 200,
       message: 'OK',
@@ -143,7 +147,7 @@ router.get('/twitter/callback',
     let data = {
       user: req.user
     }
-    let token = jwt.sign(data, secret, { expiresIn: 20 })
+    let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
     let payload = {
       code: 200,
       message: 'OK',
@@ -153,14 +157,17 @@ router.get('/twitter/callback',
     res.status(200).json(payload)
   })
 
-router.get('/google', passport.authenticate('google', { session: false, scope: 'https://www.googleapis.com/auth/plus.login' }))
+router.get('/google', passport.authenticate('google', { session: false, scope: [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+  ] }))
 
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/google', session: false }), (req, res) => {
     let data = {
       user: req.user
     }
-    let token = jwt.sign(data, secret, { expiresIn: 20 })
+    let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
     let payload = {
       code: 200,
       message: 'OK',

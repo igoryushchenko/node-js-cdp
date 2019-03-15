@@ -1,10 +1,3 @@
 {
-  "tokenSecret" : "secretkey",
-  "tokenHeaderName": "x-access-token",
-  "facebookAppId": "1188733571301886",
-  "facebookAppSecret": "",
-  "twitterConsumerKey": "aedgfsaedf",
-  "twitterConsumerSecret": "dsfds",
-  "googleConsumerKey": "769447259682-r5lrdbe16culn3eig2rbjkf7ijmreb3a.apps.googleusercontent.com",
-  "googleConsumerSecret": "FOgvSsBv4WAB7RocftrnQz1X"
+
 }

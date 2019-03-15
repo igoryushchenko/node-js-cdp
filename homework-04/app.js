@@ -13,6 +13,7 @@ const app = express()
 const apiRouter = express.Router()
 
 app.use(passport.initialize())
+app.use(express.urlencoded())
 apiRouter.use('/auth', authentication)
 apiRouter.use('/users', users)
 

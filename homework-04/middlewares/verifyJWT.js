@@ -1,13 +1,12 @@
 import jwt from 'jsonwebtoken'
-import config from '../config/config.json'
+import dotenv from 'dotenv'
 
-const secret = config.tokenSecret
-const tokenHeaderName = config.tokenHeaderName
+dotenv.config()
 
 export default (req, res, next) => {
-  let token = req.headers[tokenHeaderName]
+  let token = req.headers[process.env.tokenHeaderName]
   if (token) {
-    jwt.verify(token, secret, (err, decoded) => {
+    jwt.verify(token, process.env.tokenSecret, (err, decoded) => {
       if (err) {
         console.log(err)
         res.status(403).json({
