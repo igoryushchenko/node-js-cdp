@@ -5,9 +5,6 @@ import LocalStrategy from 'passport-local'
 import FacebookStrategy from 'passport-facebook'
 import TwitterStrategy from 'passport-twitter'
 import User from '../models/User'
-import dotenv from 'dotenv'
-
-dotenv.config()
 
 const router = express.Router()
 
