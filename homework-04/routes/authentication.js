@@ -4,36 +4,40 @@ import passport from 'passport'
 import LocalStrategy from 'passport-local'
 import FacebookStrategy from 'passport-facebook'
 import TwitterStrategy from 'passport-twitter'
-import User from '../models/User'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const router = express.Router()
 
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
+const User = require('../models').User
 
-const usersDb = User.getUsersDB()
 const secret = process.env.tokenSecret
 
 router.post('/local', (req, res) => {
   if (req.body && req.body.email) {
-    const user = usersDb.find(user => user.email === req.body.email)
-    if (user && user.password === req.body.password) {
-      let data = {
-          user: user
-      }
-      let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
-      let payload = {
-        code: 200,
-        message: 'OK',
-        data: data,
-        token: token
-      }
-      res.status(200).json(payload)
-    } else {
-      res.status(404).json({
-        code: 404,
-        message: 'Not Found'
-      })
-    }
+    User.findOne({where: {email: req.body.email, password: req.body.password}})
+        .then(user => {
+          if (user) {
+            let data = {
+              user: user
+            }
+            let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
+            let payload = {
+              code: 200,
+              message: 'OK',
+              data: data,
+              token: token
+            }
+            res.status(200).json(payload)
+          } else {
+            res.status(404).json({
+              code: 404,
+              message: 'Not Found'
+            })
+          }
+        })
   } else {
     res.status(404).json({
       code: 404,
@@ -47,12 +51,14 @@ passport.use(new LocalStrategy({
   passwordField: 'password',
   session: false
 }, (username, password, done) => {
-  const user = usersDb.find(user => user.email === username)
-  if (user && user.password === password) {
-    done(null, user)
-  } else {
-    done(null, false, 'Invalid email or password')
-  }
+  User.findOne({where: {email: username, password: password}})
+      .then(user => {
+        if (user) {
+          done(null, user)
+        } else {
+          console.log('User not found in DB')
+        }
+      })
 }))
 
 passport.use(new FacebookStrategy({
@@ -62,14 +68,15 @@ passport.use(new FacebookStrategy({
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
-    const user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      console.log('User not found in DB')
-    }
-  }
-}))
+    User.findOne({where: {email: profile.emails[0].value}})
+        .then(user => {
+          if (user) {
+            done(null, user)
+          } else {
+            console.log('User not found in DB')
+          }
+        })
+  }}))
 
 passport.use(new TwitterStrategy({
   consumerKey: process.env.twitterConsumerKey,
@@ -78,14 +85,15 @@ passport.use(new TwitterStrategy({
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
-    const user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      console.log('User not found in DB')
-    }
-  }
-}))
+    User.findOne({where: {email: profile.emails[0].value}})
+        .then(user => {
+          if (user) {
+            done(null, user)
+          } else {
+            console.log('User not found in DB')
+          }
+        })
+  }}))
 
 passport.use(new GoogleStrategy({
   clientID: process.env.googleConsumerKey,
@@ -94,16 +102,15 @@ passport.use(new GoogleStrategy({
   session: false
 }, (accessToken, refreshToken, profile, done) => {
   if (profile) {
-    let user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      user = new User(profile.displayName, profile.emails[0].value)
-      usersDb.push(user)
-      done(null, user)
-    }
-  }
-}))
+    User.findOrCreate({where: {email: profile.emails[0].value}})
+        .then(([user, created]) => {
+          if (user) {
+            done(null, user)
+          } else {
+            console.log('User not found in DB')
+          }
+        })
+  }}))
 
 router.post('/passport-local', passport.authenticate('local', { session: false }), (req, res) => {
   let data = {

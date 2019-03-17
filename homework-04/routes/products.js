@@ -1,35 +1,25 @@
 import express from 'express'
-import uuidv1 from 'uuid/v1'
-import Product from '../models/Product'
 
-const productDb = []
-const product1 = new Product('1111', 'Nice Book')
-product1.addReview('Cool!')
-product1.addReview('Awesome!')
-
-const product2 = new Product('2222', 'T-Shirt')
-product2.addReview('Cool!')
-product2.addReview('Nice')
-
-const product3 = new Product('3333', 'Black Boots')
-product3.addReview('rubbish')
-product3.addReview('so ugly')
-
-productDb.push(product1)
-productDb.push(product2)
-productDb.push(product3)
+const Product = require('../models').Product
+const Review = require('../models').Review
 
 const router = express.Router()
 
 router.use(express.json())
 
 router.param('id', (req, res, next, id) => {
-  req.product = productDb.find(product => product.id === id)
-  next()
+  Product.findByPk(id, {include: [ { model: Review, as: 'reviews' } ]})
+      .then(product => {
+        req.product = product
+        next()
+      })
 })
 
 router.get('/', (req, res) => {
-  res.json(productDb)
+  Product.findAll({include: [ { model: Review, as: 'reviews' } ]})
+      .then(products => {
+        res.json(products)
+      })
 })
 
 router.get('/:id', (req, res) => {
@@ -50,9 +40,10 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   if (req.body !== undefined) {
-    const newProduct = new Product(uuidv1(), req.body.name)
-    productDb.push(newProduct)
-    res.status(201).json(newProduct)
+    Product.create({name: req.body.name})
+        .then(newProduct => {
+          res.status(201).json(newProduct)
+        })
   } else {
     res.status(404).json({
       success: false,
