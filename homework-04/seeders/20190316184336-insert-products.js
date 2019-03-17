@@ -18,6 +18,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Products', {id: {[Op.in]: [1, 2, 3]}}, {}, {});
+    return queryInterface.bulkDelete('Products', {id: {[Sequelize.Op.in]: [1, 2, 3]}});
   }
 };

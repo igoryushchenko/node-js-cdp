@@ -34,6 +34,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', {email: {[Op.in]: ['bob@mail.com', 'jay@mail.com', 'alex@mail.com']}}, {}, {});
+    return queryInterface.bulkDelete('Users', {email: {[Sequelize.Op.in]: ['bob@mail.com', 'jay@mail.com', 'alex@mail.com']}});
   }
 };

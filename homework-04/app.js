@@ -1,5 +1,4 @@
 import express from 'express'
-import dotenv from 'dotenv'
 import users from './routes/users'
 import products from './routes/products'
 import authentication from './routes/authentication'
@@ -10,8 +9,6 @@ import verifyToken from './middlewares/verifyJWT'
 import db from './models/index'
 
 import logger from 'morgan'
-
-dotenv.config()
 
 db.sequelize.authenticate()
     .then(() => {
