@@ -4,106 +4,43 @@ import passport from 'passport'
 import LocalStrategy from 'passport-local'
 import FacebookStrategy from 'passport-facebook'
 import TwitterStrategy from 'passport-twitter'
-import User from '../models/User'
+import authController from '../controllers/authController'
 
 const router = express.Router()
 
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
-const usersDb = User.getUsersDB()
 const secret = process.env.tokenSecret
 
-router.post('/local', (req, res) => {
-  if (req.body && req.body.email) {
-    const user = usersDb.find(user => user.email === req.body.email)
-    if (user && user.password === req.body.password) {
-      let data = {
-          user: user
-      }
-      let token = jwt.sign(data, secret, { expiresIn: process.env.tokenExpireTime })
-      let payload = {
-        code: 200,
-        message: 'OK',
-        data: data,
-        token: token
-      }
-      res.status(200).json(payload)
-    } else {
-      res.status(404).json({
-        code: 404,
-        message: 'Not Found'
-      })
-    }
-  } else {
-    res.status(404).json({
-      code: 404,
-      message: 'Missing body'
-    })
-  }
-})
+router.post('/local', authController.localAuth)
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
   session: false
-}, (username, password, done) => {
-  const user = usersDb.find(user => user.email === username)
-  if (user && user.password === password) {
-    done(null, user)
-  } else {
-    done(null, false, 'Invalid email or password')
-  }
-}))
+}, authController.localPassportAuth
+))
 
 passport.use(new FacebookStrategy({
   clientID: process.env.facebookAppId,
   clientSecret: process.env.facebookAppSecret,
   callbackURL: process.env.facebookCallbackUrl,
   session: false
-}, (accessToken, refreshToken, profile, done) => {
-  if (profile) {
-    const user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      console.log('User not found in DB')
-    }
-  }
-}))
+}, authController.socialAuth))
 
 passport.use(new TwitterStrategy({
   consumerKey: process.env.twitterConsumerKey,
   consumerSecret: process.env.twitterConsumerSecret,
   callbackURL: process.env.twitterCallbackUrl,
   session: false
-}, (accessToken, refreshToken, profile, done) => {
-  if (profile) {
-    const user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      console.log('User not found in DB')
-    }
-  }
-}))
+}, authController.socialAuth))
 
 passport.use(new GoogleStrategy({
   clientID: process.env.googleConsumerKey,
   clientSecret: process.env.googleConsumerSecret,
   callbackURL: process.env.googleCallbackUrl,
   session: false
-}, (accessToken, refreshToken, profile, done) => {
-  if (profile) {
-    let user = usersDb.find(user => user.id === profile.id)
-    if (user) {
-      done(null, user)
-    } else {
-      user = new User(profile.displayName, profile.emails[0].value)
-      usersDb.push(user)
-      done(null, user)
-    }
-  }
-}))
+}, authController.socialAuth))
 
 router.post('/passport-local', passport.authenticate('local', { session: false }), (req, res) => {
   let data = {

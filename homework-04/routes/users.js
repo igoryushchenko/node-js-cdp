@@ -1,12 +1,12 @@
 import express from 'express'
-import User from '../models/User'
 
+const User = require('../models').User
 const router = express.Router()
 
-const usersDb = User.getUsersDB()
-
 router.get('/', (req, res) => {
-    res.json(usersDb)
+    User.findAll().then(users => {
+        res.json(users)
+    })
 })
 
 export default router

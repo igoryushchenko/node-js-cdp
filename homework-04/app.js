@@ -6,8 +6,17 @@ import passport from 'passport'
 import cookieParser from './middlewares/cookieParser'
 import queryParser from './middlewares/queryParser'
 import verifyToken from './middlewares/verifyJWT'
+import db from './models/index'
 
 import logger from 'morgan'
+
+db.sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
 const app = express()
 const apiRouter = express.Router()
