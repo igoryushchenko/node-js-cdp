@@ -1,10 +1,10 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken'
 
 const User = require('../models').User
 
 function localAuth (req, res) {
     if (req.body && req.body.email) {
-        User.findOne({where: {email: req.body.email, password: req.body.password}})
+        User.findOne({ where: { email: req.body.email, password: req.body.password } })
             .then(user => {
                 if (user) {
                     let data = {
@@ -34,7 +34,7 @@ function localAuth (req, res) {
 }
 
 function localPassportAuth (username, password, done) {
-    User.findOne({where: {email: username, password}})
+    User.findOne({ where: { email: username, password } })
         .then(user => {
             if (user) {
                 done(null, user)
@@ -46,7 +46,7 @@ function localPassportAuth (username, password, done) {
 
 function socialAuth (accessToken, refreshToken, profile, done) {
     if (profile) {
-        User.findOrCreate({where: {email: profile.emails[0].value}})
+        User.findOrCreate({ where: { email: profile.emails[0].value } })
             .then(([user, created]) => {
                 if (user) {
                     done(null, user)
