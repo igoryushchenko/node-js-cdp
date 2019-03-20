@@ -5,20 +5,22 @@ import LocalStrategy from 'passport-local'
 import FacebookStrategy from 'passport-facebook'
 import TwitterStrategy from 'passport-twitter'
 import authController from '../controllers/authController'
+import authMongoController from '../controllers/authMongoController'
 
 const router = express.Router()
 
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 const secret = process.env.tokenSecret
+const useMongo = process.env.useMongoAsDb
 
-router.post('/local', authController.localAuth)
+router.post('/local', useMongo ? authMongoController.localAuth : authController.localAuth)
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
   session: false
-}, authController.localPassportAuth
+}, useMongo ? authMongoController.localPassportAuth : authController.localPassportAuth
 ))
 
 passport.use(new FacebookStrategy({
@@ -26,21 +28,21 @@ passport.use(new FacebookStrategy({
   clientSecret: process.env.facebookAppSecret,
   callbackURL: process.env.facebookCallbackUrl,
   session: false
-}, authController.socialAuth))
+}, useMongo ? authMongoController.socialAuth : authController.socialAuth))
 
 passport.use(new TwitterStrategy({
   consumerKey: process.env.twitterConsumerKey,
   consumerSecret: process.env.twitterConsumerSecret,
   callbackURL: process.env.twitterCallbackUrl,
   session: false
-}, authController.socialAuth))
+}, useMongo ? authMongoController.socialAuth : authController.socialAuth))
 
 passport.use(new GoogleStrategy({
   clientID: process.env.googleConsumerKey,
   clientSecret: process.env.googleConsumerSecret,
   callbackURL: process.env.googleCallbackUrl,
   session: false
-}, authController.socialAuth))
+}, useMongo ? authMongoController.socialAuth : authController.socialAuth))
 
 router.post('/passport-local', passport.authenticate('local', { session: false }), (req, res) => {
   let data = {

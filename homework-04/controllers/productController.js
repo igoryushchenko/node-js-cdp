@@ -2,7 +2,7 @@ const Product = require('../models').Product
 const Review = require('../models').Review
 
 function findProductById (req, res, next, id) {
-    Product.findByPk(id, {include: [ { model: Review, as: 'reviews' } ]})
+    Product.findByPk(id, { include: [ { model: Review, as: 'reviews' } ] })
         .then(product => {
             req.product = product
             next()
@@ -10,7 +10,7 @@ function findProductById (req, res, next, id) {
 }
 
 function findAllProducts (req, res) {
-    Product.findAll({include: [ { model: Review, as: 'reviews' } ]})
+    Product.findAll({ include: [ { model: Review, as: 'reviews' } ] })
         .then(products => {
             res.json(products)
         })
@@ -29,7 +29,7 @@ function getProduct (req, res) {
 
 function addNewProduct (req, res) {
     if (req.body !== undefined) {
-        Product.create({name: req.body.name})
+        Product.create({ name: req.body.name })
             .then(newProduct => {
                 res.status(201).json(newProduct)
             })
@@ -54,7 +54,7 @@ function getReviewsByProduct (req, res) {
 
 function addProductReview (req, res) {
     if (req.product) {
-        Review.create({text: req.body.review, productId: req.product.id})
+        Review.create({ text: req.body.review, productId: req.product.id })
             .then(newReview => {
                 req.product.reviews.push(newReview)
                 res.json(newReview)
@@ -65,7 +65,6 @@ function addProductReview (req, res) {
             reason: `Product with id=${req.params.id} not found`
         })
     }
-
 }
 
 export default { findProductById, findAllProducts, getProduct, addNewProduct, getReviewsByProduct, addProductReview }

@@ -1,24 +1,22 @@
 import mongoose from 'mongoose'
 
-const locationSchema = new mongoose.Schema({
+const LocationSchema = new mongoose.Schema({
   lat: Number,
   long: Number
 })
 
-const citySchema = new mongoose.Schema({
+const CitySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
   },
   country: String,
   capital: {
-    Boolean,
+    type: Boolean,
     required: true
   },
-  location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location' }
+  location: LocationSchema
 })
 
-const Location = mongoose.model('Location', locationSchema)
-const City = mongoose.model('City', citySchema)
-
-export default { City, Location }
+export const Location = mongoose.model('Location', LocationSchema)
+export const City = mongoose.model('City', CitySchema)

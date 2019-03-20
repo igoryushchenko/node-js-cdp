@@ -1,12 +1,11 @@
 import express from 'express'
+import userController from '../controllers/userController'
+import userMongoController from '../controllers/userMongoController'
 
-const User = require('../models').User
+const useMongo = process.env.useMongoAsDb
 const router = express.Router()
 
-router.get('/', (req, res) => {
-    User.findAll().then(users => {
-        res.json(users)
-    })
-})
+router.get('/', useMongo ? userMongoController.getUsers : userController.getUsers)
+router.delete('/:id', useMongo ? userMongoController.deleteUser : userController.deleteUser)
 
 export default router
