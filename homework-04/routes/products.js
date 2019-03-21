@@ -13,6 +13,8 @@ router.get('/:id', productController.getProduct)
 
 router.post('/', productController.addNewProduct)
 
+router.delete('/:id', productController.deleteProduct)
+
 router.get('/:id/reviews', productController.getReviewsByProduct)
 
 router.post('/:id/reviews', productController.addProductReview)

@@ -41,6 +41,30 @@ function addNewProduct (req, res) {
     }
 }
 
+function deleteProduct (req, res) {
+  if (req.product) {
+    req.product.destroy()
+      .then(() => {
+        res.status(200).json({
+          success: true,
+          reason: 'Product deleted'
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        res.status(500).json({
+          success: false,
+          reason: 'Delete failed'
+        })
+      })
+  } else {
+    res.status(404).json({
+      success: false,
+      reason: 'Product not found'
+    })
+  }
+}
+
 function getReviewsByProduct (req, res) {
     if (req.product === undefined) {
         res.status(404).json({
@@ -67,4 +91,4 @@ function addProductReview (req, res) {
     }
 }
 
-export default { findProductById, findAllProducts, getProduct, addNewProduct, getReviewsByProduct, addProductReview }
+export default { findProductById, findAllProducts, getProduct, addNewProduct, getReviewsByProduct, addProductReview, deleteProduct }

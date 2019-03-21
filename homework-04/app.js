@@ -6,18 +6,17 @@ import passport from 'passport'
 import cookieParser from './middlewares/cookieParser'
 import queryParser from './middlewares/queryParser'
 import verifyToken from './middlewares/verifyJWT'
-// import db from './models/index'
-import mongo from './models/mongo/mongoDB'
+import db from './models/index'
 
 import logger from 'morgan'
 
-// db.sequelize.authenticate()
-//     .then(() => {
-//         console.log('Connection has been established successfully.')
-//     })
-//     .catch(err => {
-//         console.error('Unable to connect to the database:', err)
-//     })
+db.sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.')
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err)
+    })
 
 const app = express()
 const apiRouter = express.Router()
@@ -30,7 +29,7 @@ apiRouter.use('/auth', authentication)
 apiRouter.use('/users', users)
 apiRouter.use('/products', products)
 app.all('*', cookieParser, queryParser)
-// app.all(/^\/api\/(?!auth*).*$/, verifyToken)
+app.all(/^\/api\/(?!auth*).*$/, verifyToken)
 app.use('/api', apiRouter)
 
 export default app
