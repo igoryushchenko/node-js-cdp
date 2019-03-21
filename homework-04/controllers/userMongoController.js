@@ -1,14 +1,14 @@
 import User from '../models/mongo/User'
 
 function deleteUser (req, res) {
-  User.findOneAndRemove({ id: req.params['id'] }, err => {
+  User.findOneAndRemove(req.params['id'], err => {
     if (err) {
       res.status(500).json({
         code: 500,
         message: 'Something went wrong'
       })
     } else {
-      res.code(200).json({
+      res.json({
         code: 200,
         message: 'Successfully deleted'
       })

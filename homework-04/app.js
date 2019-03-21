@@ -1,6 +1,7 @@
 import express from 'express'
 import users from './routes/users'
 import products from './routes/products'
+import cities from './routes/cities'
 import authentication from './routes/authentication'
 import passport from 'passport'
 import cookieParser from './middlewares/cookieParser'
@@ -33,6 +34,7 @@ apiRouter.use('/auth', authentication)
 
 apiRouter.use('/users', users)
 apiRouter.use('/products', products)
+apiRouter.use('/cities', cities)
 app.all('*', cookieParser, queryParser)
 app.all(/^\/api\/(?!auth*).*$/, verifyToken)
 app.use('/api', apiRouter)
