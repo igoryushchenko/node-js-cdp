@@ -1,24 +1,85 @@
 import express from 'express'
 import productController from '../controllers/productController'
-import productMongoController from '../controllers/productMongoController'
+import { raiseAnErrorResponse, raiseBadRequestResponse, raiseEntityNotFoundResponse } from './requestUtils'
 
-const useMongo = process.env.useMongoAsDb
 const router = express.Router()
 
 router.use(express.json())
 
-router.param('id', useMongo ? productMongoController.findProductById : productController.findProductById)
+router.param('id', (req, res, next, id) => {
+  productController.findProductById(id)
+    .then(product => {
+      req.product = product
+      next()
+  })
+})
 
-router.get('/', useMongo ? productMongoController.findAllProducts : productController.findAllProducts)
+router.get('/', (req, res) => {
+  productController.findAllProducts()
+    .then(products => {
+      res.json(products)
+    })
+    .catch(err => {
+      raiseAnErrorResponse(res, err)
+    })
+})
 
-router.get('/:id', useMongo ? productMongoController.getProduct : productController.getProduct)
+router.get('/:id', (req, res) => {
+  if (req.product) {
+    res.json(req.product)
+  } else {
+    raiseEntityNotFoundResponse(res, req.params.id)
+  }
+})
 
-router.post('/', useMongo ? productMongoController.addNewProduct : productController.addNewProduct)
+router.post('/', (req, res) => {
+  if (req.body) {
+    productController.addNewProduct(req.body.name)
+      .then(newProduct => {
+        res.status(201).json(newProduct)
+      })
+      .catch(err => {
+        raiseAnErrorResponse(res, err)
+      })
+  } else {
+    raiseBadRequestResponse(res)
+  }
+})
 
-router.delete('/:id', useMongo ? productMongoController.deleteProduct : productController.deleteProduct)
+router.delete('/:id', (req, res) => {
+  if (req.product) {
+    productController.deleteProduct(req.product)
+      .then(deletedProduct => {
+        res.status(200).json(deletedProduct)
+      })
+      .catch(err => {
+        raiseAnErrorResponse(res, err)
+      })
+  } else {
+    raiseEntityNotFoundResponse(res, req.params.id)
+  }
+})
 
-router.get('/:id/reviews', useMongo ? productMongoController.getReviewsByProduct : productController.getReviewsByProduct)
+router.get('/:id/reviews', (req, res) => {
+  if (req.product) {
+    res.json(req.product.reviews)
+  } else {
+    raiseEntityNotFoundResponse(res, req.params.id)
+  }
+})
 
-router.post('/:id/reviews', useMongo ? productMongoController.addProductReview : productController.addProductReview)
+router.post('/:id/reviews', (req, res) => {
+  if (req.product) {
+    productController.addProductReview(req.product, req.body.review)
+      .then(newReview => {
+        res.json(newReview)
+      })
+      .catch(err => {
+        raiseAnErrorResponse(res, err)
+      })
+  } else {
+    raiseEntityNotFoundResponse(res, req.params.id)
+  }
+})
 
 export default router

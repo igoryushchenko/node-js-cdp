@@ -1,19 +1,36 @@
-const User = require('../models').User
+import UserMongo from '../models/mongo/User'
+import UserSql from '../models/User'
 
-function getUsers (req, res) {
-  User.findAll().then(users => {
-    res.json(users)
-  })
+const useMongo = process.env.useMongoAsDb
+
+function getUsers () {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      UserMongo.find((err, users) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(users)
+      })
+    })
+  } else {
+    return UserSql.findAll()
+  }
 }
 
-function deleteUser (req, res) {
-  User.destroy({ where: { id: req.params['id'] } })
-    .then(deletedUser => {
-      res.code(200).json({
-        code: 200,
-        message: 'Successfully deleted'
+function deleteUser (userId) {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      UserMongo.findOneAndRemove(userId, (err, deletedUser) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(deletedUser)
       })
-  })
+    })
+  } else {
+    return UserSql.destroy({ where: { id: userId } })
+  }
 }
 
 export default { getUsers, deleteUser }

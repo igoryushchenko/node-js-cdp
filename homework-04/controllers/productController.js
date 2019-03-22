@@ -1,94 +1,92 @@
-const Product = require('../models').Product
-const Review = require('../models').Review
+import ProductSql from '../models/Product'
+import ReviewSql from '../models/Review'
+import ProductMongo from '../models/mongo/Product'
 
-function findProductById (req, res, next, id) {
-    Product.findByPk(id, { include: [ { model: Review, as: 'reviews' } ] })
-        .then(product => {
-            req.product = product
-            next()
-        })
-}
+const useMongo = process.env.useMongoAsDb
 
-function findAllProducts (req, res) {
-    Product.findAll({ include: [ { model: Review, as: 'reviews' } ] })
-        .then(products => {
-            res.json(products)
-        })
-}
-
-function getProduct (req, res) {
-    if (req.product === undefined) {
-        res.status(404).json({
-            success: false,
-            reason: `Product with id=${req.params.id} not found`
-        })
-    } else {
-        res.json(req.product)
-    }
-}
-
-function addNewProduct (req, res) {
-    if (req.body !== undefined) {
-        Product.create({ name: req.body.name })
-            .then(newProduct => {
-                res.status(201).json(newProduct)
-            })
-    } else {
-        res.status(404).json({
-            success: false,
-            reason: 'Missing body'
-        })
-    }
-}
-
-function deleteProduct (req, res) {
-  if (req.product) {
-    req.product.destroy()
-      .then(() => {
-        res.status(200).json({
-          success: true,
-          reason: 'Product deleted'
-        })
+function findProductById (id) {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      ProductMongo.findById(id, (err, product) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(product)
       })
-      .catch(err => {
-        console.log(err)
-        res.status(500).json({
-          success: false,
-          reason: 'Delete failed'
-        })
-      })
+    })
   } else {
-    res.status(404).json({
-      success: false,
-      reason: 'Product not found'
+    return ProductSql.findByPk(id, { include: [ { model: ReviewSql, as: 'reviews' } ] })
+  }
+}
+
+function findAllProducts () {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      ProductMongo.find((err, products) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(products)
+      })
+    })
+  } else {
+    return ProductSql.findAll({ include: [ { model: ReviewSql, as: 'reviews' } ] })
+  }
+}
+
+function addNewProduct (name) {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      ProductMongo.create({
+        name,
+        reviews: []
+      }, (err, newProduct) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(newProduct)
+      })
+    })
+  } else {
+    return ProductSql.create({ name })
+  }
+}
+
+function deleteProduct (productToDelete) {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      productToDelete.remove((err, deletedProduct) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(deletedProduct)
+      })
+    })
+  } else {
+    return productToDelete.destroy()
+  }
+}
+
+function addProductReview (product, review) {
+  if (useMongo) {
+    return new Promise((resolve, reject) => {
+      product.reviews.push(review)
+      product.save(err => {
+        if (err) {
+          reject(err)
+        }
+        resolve(review)
+      })
+    })
+  } else {
+    let reviewPromise = ReviewSql.create({ text: review, productId: product.id })
+    return reviewPromise.then(newReview => {
+      return new Promise((resolve, reject) => {
+        product.reviews.push(newReview)
+        resolve(newReview)
+      })
     })
   }
 }
 
-function getReviewsByProduct (req, res) {
-    if (req.product === undefined) {
-        res.status(404).json({
-            success: false,
-            reason: `Product with id=${req.params.id} not found`
-        })
-    } else {
-        res.json(req.product.reviews)
-    }
-}
-
-function addProductReview (req, res) {
-    if (req.product) {
-        Review.create({ text: req.body.review, productId: req.product.id })
-            .then(newReview => {
-                req.product.reviews.push(newReview)
-                res.json(newReview)
-            })
-    } else {
-        res.status(404).json({
-            success: false,
-            reason: `Product with id=${req.params.id} not found`
-        })
-    }
-}
-
-export default { findProductById, findAllProducts, getProduct, addNewProduct, getReviewsByProduct, addProductReview, deleteProduct }
+export default { findProductById, findAllProducts, addNewProduct, addProductReview, deleteProduct }

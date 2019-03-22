@@ -1,91 +1,63 @@
 import { City } from '../models/mongo/City'
 
-function getRandomCity (req, res) {
-  City.aggregate([{ $sample: { size: 1 } }], (err, data) => {
-    if (err) {
-      console.log(err)
-      res.status(500).json({
-        code: 500,
-        message: 'Something went wrong'
-      })
-    } else {
-      res.json(data)
-    }
+function getRandomCity () {
+  return new Promise((resolve, reject) => {
+    City.aggregate([{ $sample: { size: 1 } }], (err, city) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(city)
+      }
+    })
   })
 }
 
-function getAllCities (req, res) {
-  City.find((err, cities) => {
-    if (err) {
-      res.status(500).json({
-        code: 500,
-        message: 'Something went wrong'
-      })
-    } else {
-      res.json(cities)
-    }
+function getAllCities () {
+  return new Promise((resolve, reject) => {
+    City.find((err, cities) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(cities)
+      }
+    })
   })
 }
 
-function addNewCity (req, res) {
-  if (req.body) {
+function addNewCity (newCityReq) {
+  return new Promise((resolve, reject) => {
     const newCity = new City(
-      req.body
+      newCityReq
     )
-
     newCity.save(err => {
       if (err) {
-        console.log(err)
-        throw err
+        reject(err)
       }
-      console.log(`new City ${req.body.name} saved successfully`)
+      console.log(`new City ${newCityReq.name} saved successfully`)
+      resolve(newCity)
     })
-    res.status(201).json(newCity)
-  } else {
-    res.status(404).json({
-      success: false,
-      reason: 'Missing body'
-    })
-  }
+  })
 }
 
-function updateCity (req, res) {
-  if (req.body) {
-    City.findByIdAndUpdate(req.params['id'], req.body, { upsert: true }, err => {
+function updateCity (cityId, cityUpdated) {
+  return new Promise((resolve, reject) => {
+    City.findByIdAndUpdate(cityId, cityUpdated, { upsert: true }, err => {
       if (err) {
-        res.status(500).json({
-          success: false,
-          reason: 'Update failed'
-        })
-      } else {
-        res.status(201).json({
-          success: true,
-          reason: 'Update successful'
-        })
+        reject(err)
       }
+      resolve(cityUpdated)
     })
-  } else {
-    res.status(404).json({
-      success: false,
-      reason: 'Missing body'
-    })
-  }
+  })
 }
 
-function deleteCity (req, res) {
-  City.findByIdAndRemove(req.params['id'], (err, data) => {
-    if (err) {
-      res.status(500).json({
-        code: 500,
-        message: 'Something went wrong'
-      })
-    } else {
-      console.log(res)
-      res.json({
-        code: 200,
-        message: 'Successfully deleted'
-      })
-    }
+function deleteCity (cityId) {
+  return new Promise((resolve, reject) => {
+    City.findByIdAndRemove(cityId, (err, data) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(data)
+    })
   })
 }
 

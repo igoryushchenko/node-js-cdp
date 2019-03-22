@@ -1,11 +1,27 @@
 import express from 'express'
 import userController from '../controllers/userController'
-import userMongoController from '../controllers/userMongoController'
+import { raiseAnErrorResponse } from './requestUtils'
 
-const useMongo = process.env.useMongoAsDb
 const router = express.Router()
 
-router.get('/', useMongo ? userMongoController.getUsers : userController.getUsers)
-router.delete('/:id', useMongo ? userMongoController.deleteUser : userController.deleteUser)
+router.get('/', (req, res) => {
+  userController.getUsers()
+    .then(users => {
+      res.json(users)
+    })
+    .catch(err => {
+      raiseAnErrorResponse(res, err)
+    })
+})
+
+router.delete('/:id', (req, res) => {
+  userController.deleteUser(req.params['id'])
+    .then(deletedUser => {
+      res.json(deletedUser)
+    })
+    .catch(err => {
+      raiseAnErrorResponse(res, err)
+    })
+})
 
 export default router

@@ -1,6 +1,11 @@
+import mongo from './models/mongo/mongoDB'
 import { City, Location } from './models/mongo/City'
 import User from './models/mongo/User'
 import Product from './models/mongo/Product'
+
+mongo.once('open', function () {
+  console.log('MongoDB connection succesful!')
+})
 
 function createCity (name, country, capital, lat, long) {
   const newLocation = new Location({
