@@ -7,25 +7,23 @@ require('http')
     MongoClient.connect(url, (err, client) => {
       if (err) {
         console.log(err)
-        res.code(500).json({
-          code: 500,
-          message: 'Something went wrong'
-        })
+        res.end('Something went wrong')
       } else {
         const cityCollection = client.db('node-cdp').collection('cities')
         console.log('Client ready')
-        cityCollection.aggregate([{ $sample: { size: 1 } }], (err, data) => {
-          if (err) {
-            console.log(err)
-            res.status(500).json({
-              code: 500,
-              message: 'Something went wrong'
+        cityCollection.aggregate([{ $sample: { size: 1 } }]).toArray()
+          .then(result => {
+            console.log(result)
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
             })
-          } else {
-            console.log(data)
-            res.json(data)
-          }
-        })
+            res.end(JSON.stringify(result))
+          })
+          .catch(err => {
+            console.log(err)
+            res.statusCode = 500
+            res.end('Server error')
+          })
       }
       client.close()
     })
