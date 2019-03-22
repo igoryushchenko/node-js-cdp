@@ -8,6 +8,8 @@ import authController from '../controllers/authController'
 
 const router = express.Router()
 
+router.use(express.json())
+
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 const secret = process.env.tokenSecret
