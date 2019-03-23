@@ -1,11 +1,26 @@
 import express from 'express'
+import userController from '../controllers/userController'
+import { raiseAnErrorResponse } from './requestUtils'
 
-const User = require('../models').User
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    User.findAll().then(users => {
-        res.json(users)
+  userController.getUsers()
+    .then(users => {
+      res.json(users)
+    })
+    .catch(err => {
+      raiseAnErrorResponse(res, err)
+    })
+})
+
+router.delete('/:id', (req, res) => {
+  userController.deleteUser(req.params['id'])
+    .then(deletedUser => {
+      res.json(deletedUser)
+    })
+    .catch(err => {
+      raiseAnErrorResponse(res, err)
     })
 })
 
