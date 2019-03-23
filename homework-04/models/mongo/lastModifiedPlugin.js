@@ -6,6 +6,11 @@ function lastModifiedPlugin (schema, options) {
     next()
   })
 
+  schema.pre('update', function (next) {
+    this.lastModifiedDate = new Date()
+    next()
+  })
+
   if (options && options.index) {
     schema.path('lastModifiedDate').index(options.index)
   }

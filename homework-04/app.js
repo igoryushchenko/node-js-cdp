@@ -27,11 +27,12 @@ mongo.once('open', function () {
 const app = express()
 const apiRouter = express.Router()
 
+app.use(express.json())
 app.use(logger('tiny'))
 app.use(passport.initialize())
 app.use(express.urlencoded())
-apiRouter.use('/auth', authentication)
 
+apiRouter.use('/auth', authentication)
 apiRouter.use('/users', users)
 apiRouter.use('/products', products)
 apiRouter.use('/cities', cities)

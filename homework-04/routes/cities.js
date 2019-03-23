@@ -4,8 +4,6 @@ import { raiseBadRequestResponse, raiseAnErrorResponse } from './requestUtils'
 
 const router = express.Router()
 
-router.use(express.json())
-
 router.get('/', (req, res) => {
   citiesController.getAllCities()
     .then(cities => {

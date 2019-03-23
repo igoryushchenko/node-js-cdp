@@ -4,8 +4,6 @@ import { raiseAnErrorResponse, raiseBadRequestResponse, raiseEntityNotFoundRespo
 
 const router = express.Router()
 
-router.use(express.json())
-
 router.param('id', (req, res, next, id) => {
   productController.findProductById(id)
     .then(product => {
