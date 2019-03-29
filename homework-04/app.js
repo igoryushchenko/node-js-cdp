@@ -7,22 +7,21 @@ import passport from 'passport'
 import cookieParser from './middlewares/cookieParser'
 import queryParser from './middlewares/queryParser'
 import verifyToken from './middlewares/verifyJWT'
-import db from './models/index'
-import mongo from './models/mongo/mongoDB'
 
 import logger from 'morgan'
 
-db.sequelize.authenticate()
+if (process.env.useMongoAsDb) {
+  require('./models/mongo/mongoDB')
+} else {
+  const db = require('./models/index')
+  db.sequelize.authenticate()
     .then(() => {
-        console.log('Connection has been established successfully.')
+      console.log('Connection has been established successfully.')
     })
     .catch(err => {
-        console.error('Unable to connect to the database:', err)
+      console.error('Unable to connect to the database:', err)
     })
-
-mongo.once('open', function () {
-  console.log('MongoDB connection succesful!')
-})
+}
 
 const app = express()
 const apiRouter = express.Router()
@@ -37,7 +36,7 @@ apiRouter.use('/users', users)
 apiRouter.use('/products', products)
 apiRouter.use('/cities', cities)
 app.all('*', cookieParser, queryParser)
-app.all(/^\/api\/(?!auth*).*$/, verifyToken)
+// app.all(/^\/api\/(?!auth*).*$/, verifyToken)
 app.use('/api', apiRouter)
 
 export default app
