@@ -1,0 +1,529 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'Node CDP API Homework'
+  description: 'Node CDP API Swagger Homework'
+host: localhost:9000
+basePath: /api
+tags:
+  - name: auth
+    description: User authentication
+  - name: users
+    description: Users manipulations
+  - name: products
+    description: Products methods
+  - name: cities
+    description: Methods for working with cities
+schemes:
+  - http
+
+paths:
+  /auth/local:
+    post:
+      tags:
+        - auth
+      summary: User authentication using local code
+      x-swagger-router-controller: authentication
+      operationId: localAuth
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "r.jackson@mail.com"
+              password:
+                type: string
+                example: "123456"
+          description: Object with users credentials
+          required: true
+      responses:
+        404:
+          description: Not Found
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiUserAuthResponse'
+  /users:
+    get:
+      tags:
+        - users
+      summary: Returns a list os all users
+      description: Returns a list os all users
+      x-swagger-router-controller: users
+      operationId: findAllUsers
+#      security:
+#        - token: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+  /users/{id}:
+    delete:
+      tags:
+        - users
+      summary: delete a user by id
+      description: delete a user by id
+      x-swagger-router-controller: users
+      operationId: deleteUser
+#      security:
+#        - token: []
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id of a user that needs to be deleted
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+  /products:
+    get:
+      tags:
+        - products
+      summary: returns all products
+      description: returns all products
+      x-swagger-router-controller: products
+      operationId: findAllProducts
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+    post:
+      tags:
+        - products
+      summary: add a new product and returns it
+      description: add a new product and returns it
+      x-swagger-router-controller: products
+      operationId: saveNewProduct
+      consumes:
+        - application/json
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      parameters:
+        - in: body
+          name: name
+          description: Name of the product to be added to the database
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/Product'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: return a single product
+      description: return a single product by id
+      x-swagger-router-controller: products
+      operationId: findProductById
+      parameters:
+        - name: id
+          in: path
+          description: The id of a product
+          required: true
+          type: string
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Product'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+    delete:
+      tags:
+        - products
+      summary: Delete a product by id and returns it
+      description: Delete a product by id and returns it
+      x-swagger-router-controller: products
+      operationId: deleteProductById
+      parameters:
+        - name: id
+          in: path
+          description: The id of a product
+          required: true
+          type: string
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Product'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+  /products/{id}/reviews:
+    get:
+      tags:
+        - products
+      summary: Returns a product reviews by product id
+      description: Returns a product reviews by product id
+      x-swagger-router-controller: products
+      operationId: findProductsReviews
+      parameters:
+        - name: id
+          in: path
+          description: The id of a product
+          required: true
+          type: string
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+    post:
+      tags:
+        - products
+      summary: Add a new product review by product id
+      description: Add a new product review by product id
+      x-swagger-router-controller: products
+      operationId: addNewProductReview
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id of a product
+          required: true
+          type: string
+        - in: body
+          name: review
+          description: New review of a product
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+#      security:
+#        - token: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              review:
+                type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+  /cities:
+    get:
+      tags:
+        - cities
+      summary: Returns all cities
+      description: Returns all cities
+      x-swagger-router-controller: cities
+      operationId: findAllCities
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/City'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+    post:
+      tags:
+        - cities
+      summary: Adds a new city
+      description: Adds a new city and returns it
+      x-swagger-router-controller: cities
+      operationId: saveNewCity
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: City to be added
+          required: true
+          schema:
+            $ref: '#/definitions/City'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/City'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+  /cities/{id}:
+    put:
+      tags:
+        - cities
+      summary: Updates a city by id if exists or adds a new city otherwise
+      description: Updates a city by id if exists or adds a new city otherwise
+      x-swagger-router-controller: cities
+      operationId: updateCity
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id of a city
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: City data
+          required: true
+          schema:
+            $ref: '#/definitions/City'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/City'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+    delete:
+      tags:
+        - cities
+      summary: Delete a city by id
+      description: Delete a city by id and returns it
+      x-swagger-router-controller: cities
+      operationId: deleteCity
+      parameters:
+        - name: id
+          in: path
+          description: The id of a city
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/City'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+  /cities/random:
+    get:
+      tags:
+        - cities
+      summary: Return a random city on every request
+      description: Return a random city on every request
+      x-swagger-router-controller: cities
+      operationId: findRandomCity
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/City'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+securityDefinitions:
+  token:
+    type: apiKey
+    in: header
+    name: x-access-token
+
+
+definitions:
+  User:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: "Richard"
+      lastName:
+        type: string
+        example: "Jackson"
+      email:
+        type: string
+        example: "r.jackson@email.com"
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "5c949acc95d9ff241419f39c"
+      name:
+        type: string
+        example: "My product"
+      reviews:
+        type: array
+        items:
+          type: string
+  City:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "5c949acc95d9ff241419f387"
+      name:
+        type: string
+        example: "Brest"
+      country:
+        type: string
+        example: "Belarus"
+      capital:
+        type: boolean
+      location:
+        type: object
+        properties:
+          lat:
+            type: number
+            example: 52.183334
+          long:
+            type: number
+            example: 23.166667
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  ApiUserAuthResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      data:
+        $ref: '#/definitions/User'
+      token:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjpbeyJmaXJzdE5hbWUiOiJCb2IiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJlbWFpbCI6ImJvYkBtYWlsLmNvbSIsIl9fdiI6MH1dLCJpYXQiOjE1NTM3NzM1ODgsImV4cCI6MTU1Mzc3MzU4OH0.VD12ibncR04E1zpB35JarnD_b-Qo2lMlD0QU03CkesY"

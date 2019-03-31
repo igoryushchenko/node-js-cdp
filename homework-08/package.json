@@ -1,0 +1,46 @@
+{
+  "name": "homework-08",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js --exec \"node --require dotenv/config --require babel-register\"",
+    "populatedb": "node --require dotenv/config --require babel-register populatedb.js",
+    "migratedb": "npx sequelize db:migrate",
+    "lint": "eslint -o eslint-report.txt .",
+    "test": "swagger project test"
+  },
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "express": "^4.12.3",
+    "jsonwebtoken": "^8.5.0",
+    "mongodb": "^3.2.1",
+    "mongoose": "^5.4.19",
+    "pg": "^7.9.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^5.1.0",
+    "sequelize-cli": "^5.4.0",
+    "swagger-express-mw": "^0.1.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "eslint": "^5.13.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "nodemon": "^1.18.10"
+  }
+}
