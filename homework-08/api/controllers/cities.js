@@ -37,7 +37,7 @@ module.exports.saveNewCity = function saveNewCity (req, res) {
 
 module.exports.updateCity = function updateCity (req, res) {
   if (req.body) {
-    citiesService.updateCity(req.params['id'], req.body)
+    citiesService.updateCity(req.swagger.params.id.value, req.body)
         .then(cityUpdated => {
           res.status(201).json(cityUpdated)
         })
@@ -50,7 +50,7 @@ module.exports.updateCity = function updateCity (req, res) {
 }
 
 module.exports.deleteCity = function deleteCity (req, res) {
-  citiesService.deleteCity(req.params['id'])
+  citiesService.deleteCity(req.swagger.params.id.value)
       .then(result => {
         res.status(200).json(result)
       })

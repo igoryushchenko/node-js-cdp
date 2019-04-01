@@ -12,7 +12,7 @@ module.exports.findAllUsers = function findAllUsers (req, res) {
 }
 
 module.exports.deleteUser = function deleteUser (req, res) {
-    userService.deleteUser(req.params['id'])
+    userService.deleteUser(req.swagger.params.id.value)
         .then(deletedUser => {
             res.json(deletedUser)
         })
