@@ -10,7 +10,7 @@ function getUserByCredentials (email, password) {
         if (err) {
           reject(err)
         } else {
-          resolve(user)
+          resolve(user[0])
         }
       })
     })

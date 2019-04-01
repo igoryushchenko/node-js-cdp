@@ -54,6 +54,8 @@ paths:
     get:
       tags:
         - users
+      security:
+        - verifyToken: []
       summary: Returns a list os all users
       description: Returns a list os all users
       x-swagger-router-controller: users
@@ -433,7 +435,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ApiResponse'
-
+securityDefinitions:
+  verifyToken:
+    type: apiKey
+    in: header
+    name: x-access-token
 definitions:
   User:
     type: object
@@ -488,7 +494,6 @@ definitions:
     properties:
       code:
         type: integer
-        format: int32
       message:
         type: string
   ApiUserAuthResponse:
@@ -496,11 +501,13 @@ definitions:
     properties:
       code:
         type: integer
-        format: int32
       message:
         type: string
       data:
-        $ref: '#/definitions/User'
+        type: object
+        properties:
+          user:
+            $ref: '#/definitions/User'
       token:
         type: string
         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjpbeyJmaXJzdE5hbWUiOiJCb2IiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJlbWFpbCI6ImJvYkBtYWlsLmNvbSIsIl9fdiI6MH1dLCJpYXQiOjE1NTM3NzM1ODgsImV4cCI6MTU1Mzc3MzU4OH0.VD12ibncR04E1zpB35JarnD_b-Qo2lMlD0QU03CkesY"
