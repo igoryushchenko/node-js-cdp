@@ -58,8 +58,6 @@ paths:
       description: Returns a list os all users
       x-swagger-router-controller: users
       operationId: findAllUsers
-#      security:
-#        - token: []
       produces:
         - application/json
       responses:
@@ -81,8 +79,6 @@ paths:
       description: delete a user by id
       x-swagger-router-controller: users
       operationId: deleteUser
-#      security:
-#        - token: []
       produces:
         - application/json
       parameters:
@@ -111,8 +107,6 @@ paths:
       operationId: findAllProducts
       produces:
         - application/json
-#      security:
-#        - token: []
       responses:
         200:
           description: OK
@@ -135,8 +129,6 @@ paths:
         - application/json
       produces:
         - application/json
-#      security:
-#        - token: []
       parameters:
         - in: body
           name: name
@@ -174,8 +166,6 @@ paths:
           type: string
       produces:
         - application/json
-#      security:
-#        - token: []
       responses:
         200:
           description: OK
@@ -208,8 +198,6 @@ paths:
           type: string
       produces:
         - application/json
-#      security:
-#        - token: []
       responses:
         200:
           description: OK
@@ -244,8 +232,6 @@ paths:
           type: string
       produces:
         - application/json
-#      security:
-#        - token: []
       responses:
         200:
           description: OK
@@ -288,8 +274,6 @@ paths:
             type: string
       produces:
         - application/json
-#      security:
-#        - token: []
       responses:
         200:
           description: OK
@@ -449,13 +433,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ApiResponse'
-
-securityDefinitions:
-  token:
-    type: apiKey
-    in: header
-    name: x-access-token
-
 
 definitions:
   User:
